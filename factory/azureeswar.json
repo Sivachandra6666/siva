@@ -1,0 +1,15 @@
+{
+	"name": "azureeswar",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Enabled",
+			"editable": true
+		}
+	},
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "ecd8653b-962d-407a-a5cf-0358b0ce64cc",
+		"tenantId": "841f6557-9fff-45b6-9a49-f6079f958d5c"
+	}
+}
