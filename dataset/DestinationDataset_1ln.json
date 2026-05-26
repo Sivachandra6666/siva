@@ -1,5 +1,5 @@
 {
-	"name": "DelimitedText1",
+	"name": "DestinationDataset_1ln",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureDataLakeStorage1",
@@ -10,8 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "IRIS.csv",
-				"folderPath": "input",
+				"folderPath": "output",
 				"fileSystem": "raw"
 			},
 			"columnDelimiter": ",",
@@ -19,28 +18,7 @@
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": [
-			{
-				"name": "sepal_length",
-				"type": "String"
-			},
-			{
-				"name": "sepal_width",
-				"type": "String"
-			},
-			{
-				"name": "petal_length",
-				"type": "String"
-			},
-			{
-				"name": "petal_width",
-				"type": "String"
-			},
-			{
-				"name": "species",
-				"type": "String"
-			}
-		]
+		"schema": []
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
 }
