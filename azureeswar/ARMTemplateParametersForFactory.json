@@ -5,17 +5,32 @@
 		"factoryName": {
 			"value": "azureeswar"
 		},
+		"AzureDataLakeStorage1_accountKey": {
+			"value": ""
+		},
 		"AzureDataLakeStorage2_accountKey": {
 			"value": ""
 		},
+		"AzureSqlDatabase1_password": {
+			"value": ""
+		},
 		"AzureDataLakeStorage1_properties_typeProperties_url": {
-			"value": "https://eswaradls.dfs.core.windows.net/"
+			"value": "https://b268adls.dfs.core.windows.net/"
 		},
 		"AzureDataLakeStorage2_properties_typeProperties_url": {
 			"value": "https://b268adls.dfs.core.windows.net/"
 		},
 		"AzureKeyVault1_properties_typeProperties_baseUrl": {
 			"value": "https://eswar.vault.azure.net/"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_server": {
+			"value": "batch268.database.windows.net"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_database": {
+			"value": "b268"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_userName": {
+			"value": "siva"
 		}
 	}
 }
