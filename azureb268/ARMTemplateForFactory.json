@@ -1,0 +1,2136 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "azureb268"
+		},
+		"AzureDataLakeStorage1_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage1'"
+		},
+		"AzureDataLakeStorage2_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage2'"
+		},
+		"AzureSqlDatabase1_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'AzureSqlDatabase1'"
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://b268adls.dfs.core.windows.net/"
+		},
+		"AzureDataLakeStorage2_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://b268adls.dfs.core.windows.net/"
+		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://eswar.vault.azure.net/"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "batch268.database.windows.net"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "b268"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "siva"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/CopyPipeline_1ln')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy_1ln",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Wait1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "raw/input/"
+							},
+							{
+								"name": "Destination",
+								"value": "raw/output/"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings",
+									"skipLineCount": 0
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"validateDataConsistency": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "sepal_length",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "sepal_length",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "sepal_width",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "sepal_width",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "petal_length",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "petal_length",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "petal_width",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "petal_width",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "species",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "species",
+											"type": "String",
+											"physicalType": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SourceDataset_1ln",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DestinationDataset_1ln",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Wait1",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 30
+						}
+					},
+					{
+						"name": "Wait2",
+						"type": "Wait",
+						"dependsOn": [
+							{
+								"activity": "Copy_1ln",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 31
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2026-05-26T04:07:40Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SourceDataset_1ln')]",
+				"[concat(variables('factoryId'), '/datasets/DestinationDataset_1ln')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CopyPipeline_2u7')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy_2u7",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Wait1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "raw/input/"
+							},
+							{
+								"name": "Destination",
+								"value": "raw/output/"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings",
+									"skipLineCount": 0
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "MergeFiles"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SourceDataset_2u7",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DestinationDataset_2u7",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Wait1",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 60
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2026-05-19T10:18:00Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SourceDataset_2u7')]",
+				"[concat(variables('factoryId'), '/datasets/DestinationDataset_2u7')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DelimitedText3",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DelimitedText4",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2026-05-20T09:48:22Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DelimitedText3')]",
+				"[concat(variables('factoryId'), '/datasets/DelimitedText4')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline2')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Wait1",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					},
+					{
+						"name": "Wait2",
+						"type": "Wait",
+						"dependsOn": [
+							{
+								"activity": "Wait1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					},
+					{
+						"name": "Wait3",
+						"type": "Wait",
+						"dependsOn": [
+							{
+								"activity": "Wait2",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					},
+					{
+						"name": "Wait4",
+						"type": "Wait",
+						"dependsOn": [
+							{
+								"activity": "Wait3",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					},
+					{
+						"name": "Stored procedure1",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Wait4",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": {
+								"value": "select * from tables;",
+								"type": "Expression"
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureSqlDatabase1",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2026-05-26T04:25:01Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline3')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Wait1",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					},
+					{
+						"name": "Wait2",
+						"type": "Wait",
+						"dependsOn": [
+							{
+								"activity": "Wait1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					},
+					{
+						"name": "Wait3",
+						"type": "Wait",
+						"dependsOn": [
+							{
+								"activity": "Wait2",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					},
+					{
+						"name": "Wait4",
+						"type": "Wait",
+						"dependsOn": [
+							{
+								"activity": "Wait3",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					},
+					{
+						"name": "Wait5",
+						"type": "Wait",
+						"dependsOn": [
+							{
+								"activity": "Wait4",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					},
+					{
+						"name": "Wait6",
+						"type": "Wait",
+						"dependsOn": [
+							{
+								"activity": "Wait5",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					},
+					{
+						"name": "Wait7",
+						"type": "Wait",
+						"dependsOn": [
+							{
+								"activity": "Wait6",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					},
+					{
+						"name": "Wait8",
+						"type": "Wait",
+						"dependsOn": [
+							{
+								"activity": "Wait7",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "IRIS.csv",
+						"folderPath": "input",
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "sepal_length",
+						"type": "String"
+					},
+					{
+						"name": "sepal_width",
+						"type": "String"
+					},
+					{
+						"name": "petal_length",
+						"type": "String"
+					},
+					{
+						"name": "petal_width",
+						"type": "String"
+					},
+					{
+						"name": "species",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText3')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "input",
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "bath",
+						"type": "String"
+					},
+					{
+						"name": "balcony",
+						"type": "String"
+					},
+					{
+						"name": "price",
+						"type": "String"
+					},
+					{
+						"name": "total_sqft_int",
+						"type": "String"
+					},
+					{
+						"name": "bhk",
+						"type": "String"
+					},
+					{
+						"name": "price_per_sqft",
+						"type": "String"
+					},
+					{
+						"name": "area_typeSuper built-up  Area",
+						"type": "String"
+					},
+					{
+						"name": "area_typeBuilt-up  Area",
+						"type": "String"
+					},
+					{
+						"name": "area_typePlot  Area",
+						"type": "String"
+					},
+					{
+						"name": "availability_Ready To Move",
+						"type": "String"
+					},
+					{
+						"name": "location_Whitefield",
+						"type": "String"
+					},
+					{
+						"name": "location_Sarjapur  Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Electronic City",
+						"type": "String"
+					},
+					{
+						"name": "location_Marathahalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Raja Rajeshwari Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Haralur Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Hennur Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Bannerghatta Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Uttarahalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Thanisandra",
+						"type": "String"
+					},
+					{
+						"name": "location_Electronic City Phase II",
+						"type": "String"
+					},
+					{
+						"name": "location_Hebbal",
+						"type": "String"
+					},
+					{
+						"name": "location_7th Phase JP Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Yelahanka",
+						"type": "String"
+					},
+					{
+						"name": "location_Kanakpura Road",
+						"type": "String"
+					},
+					{
+						"name": "location_KR Puram",
+						"type": "String"
+					},
+					{
+						"name": "location_Sarjapur",
+						"type": "String"
+					},
+					{
+						"name": "location_Rajaji Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Kasavanhalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Bellandur",
+						"type": "String"
+					},
+					{
+						"name": "location_Begur Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Banashankari",
+						"type": "String"
+					},
+					{
+						"name": "location_Kothanur",
+						"type": "String"
+					},
+					{
+						"name": "location_Hormavu",
+						"type": "String"
+					},
+					{
+						"name": "location_Harlur",
+						"type": "String"
+					},
+					{
+						"name": "location_Akshaya Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Jakkur",
+						"type": "String"
+					},
+					{
+						"name": "location_Electronics City Phase 1",
+						"type": "String"
+					},
+					{
+						"name": "location_Varthur",
+						"type": "String"
+					},
+					{
+						"name": "location_Chandapura",
+						"type": "String"
+					},
+					{
+						"name": "location_HSR Layout",
+						"type": "String"
+					},
+					{
+						"name": "location_Hennur",
+						"type": "String"
+					},
+					{
+						"name": "location_Ramamurthy Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Ramagondanahalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Kaggadasapura",
+						"type": "String"
+					},
+					{
+						"name": "location_Kundalahalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Koramangala",
+						"type": "String"
+					},
+					{
+						"name": "location_Hulimavu",
+						"type": "String"
+					},
+					{
+						"name": "location_Budigere",
+						"type": "String"
+					},
+					{
+						"name": "location_Hoodi",
+						"type": "String"
+					},
+					{
+						"name": "location_Malleshwaram",
+						"type": "String"
+					},
+					{
+						"name": "location_Hegde Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_8th Phase JP Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Gottigere",
+						"type": "String"
+					},
+					{
+						"name": "location_JP Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Yeshwanthpur",
+						"type": "String"
+					},
+					{
+						"name": "location_Channasandra",
+						"type": "String"
+					},
+					{
+						"name": "location_Bisuvanahalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Vittasandra",
+						"type": "String"
+					},
+					{
+						"name": "location_Indira Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Vijayanagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Kengeri",
+						"type": "String"
+					},
+					{
+						"name": "location_Brookefield",
+						"type": "String"
+					},
+					{
+						"name": "location_Sahakara Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Hosa Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Old Airport Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Bommasandra",
+						"type": "String"
+					},
+					{
+						"name": "location_Balagere",
+						"type": "String"
+					},
+					{
+						"name": "location_Green Glen Layout",
+						"type": "String"
+					},
+					{
+						"name": "location_Old Madras Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Rachenahalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Panathur",
+						"type": "String"
+					},
+					{
+						"name": "location_Kudlu Gate",
+						"type": "String"
+					},
+					{
+						"name": "location_Thigalarapalya",
+						"type": "String"
+					},
+					{
+						"name": "location_Ambedkar Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Jigani",
+						"type": "String"
+					},
+					{
+						"name": "location_Yelahanka New Town",
+						"type": "String"
+					},
+					{
+						"name": "location_Talaghattapura",
+						"type": "String"
+					},
+					{
+						"name": "location_Mysore Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Kadugodi",
+						"type": "String"
+					},
+					{
+						"name": "location_Frazer Town",
+						"type": "String"
+					},
+					{
+						"name": "location_Dodda Nekkundi",
+						"type": "String"
+					},
+					{
+						"name": "location_Devanahalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Kanakapura",
+						"type": "String"
+					},
+					{
+						"name": "location_Attibele",
+						"type": "String"
+					},
+					{
+						"name": "location_Anekal",
+						"type": "String"
+					},
+					{
+						"name": "location_Lakshminarayana Pura",
+						"type": "String"
+					},
+					{
+						"name": "location_Nagarbhavi",
+						"type": "String"
+					},
+					{
+						"name": "location_Ananth Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_5th Phase JP Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_TC Palaya",
+						"type": "String"
+					},
+					{
+						"name": "location_CV Raman Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Kengeri Satellite Town",
+						"type": "String"
+					},
+					{
+						"name": "location_Kudlu",
+						"type": "String"
+					},
+					{
+						"name": "location_Jalahalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Subramanyapura",
+						"type": "String"
+					},
+					{
+						"name": "location_Bhoganhalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Doddathoguru",
+						"type": "String"
+					},
+					{
+						"name": "location_Kalena Agrahara",
+						"type": "String"
+					},
+					{
+						"name": "location_Horamavu Agara",
+						"type": "String"
+					},
+					{
+						"name": "location_Vidyaranyapura",
+						"type": "String"
+					},
+					{
+						"name": "location_BTM 2nd Stage",
+						"type": "String"
+					},
+					{
+						"name": "location_Hebbal Kempapura",
+						"type": "String"
+					},
+					{
+						"name": "location_Hosur Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Horamavu Banaswadi",
+						"type": "String"
+					},
+					{
+						"name": "location_Domlur",
+						"type": "String"
+					},
+					{
+						"name": "location_Mahadevpura",
+						"type": "String"
+					},
+					{
+						"name": "location_Tumkur Road",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText4')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "input",
+						"fileSystem": "raw1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DestinationDataset_1ln')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "output",
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DestinationDataset_2u7')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "output",
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DestinationDataset_sd7')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "output",
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SourceDataset_1ln')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "input",
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "YearsExperience",
+						"type": "String"
+					},
+					{
+						"name": "Salary",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SourceDataset_2u7')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "input",
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": ",",
+					"rowDelimiter": "\n",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "bath",
+						"type": "String"
+					},
+					{
+						"name": "balcony",
+						"type": "String"
+					},
+					{
+						"name": "price",
+						"type": "String"
+					},
+					{
+						"name": "total_sqft_int",
+						"type": "String"
+					},
+					{
+						"name": "bhk",
+						"type": "String"
+					},
+					{
+						"name": "price_per_sqft",
+						"type": "String"
+					},
+					{
+						"name": "area_typeSuper built-up  Area",
+						"type": "String"
+					},
+					{
+						"name": "area_typeBuilt-up  Area",
+						"type": "String"
+					},
+					{
+						"name": "area_typePlot  Area",
+						"type": "String"
+					},
+					{
+						"name": "availability_Ready To Move",
+						"type": "String"
+					},
+					{
+						"name": "location_Whitefield",
+						"type": "String"
+					},
+					{
+						"name": "location_Sarjapur  Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Electronic City",
+						"type": "String"
+					},
+					{
+						"name": "location_Marathahalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Raja Rajeshwari Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Haralur Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Hennur Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Bannerghatta Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Uttarahalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Thanisandra",
+						"type": "String"
+					},
+					{
+						"name": "location_Electronic City Phase II",
+						"type": "String"
+					},
+					{
+						"name": "location_Hebbal",
+						"type": "String"
+					},
+					{
+						"name": "location_7th Phase JP Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Yelahanka",
+						"type": "String"
+					},
+					{
+						"name": "location_Kanakpura Road",
+						"type": "String"
+					},
+					{
+						"name": "location_KR Puram",
+						"type": "String"
+					},
+					{
+						"name": "location_Sarjapur",
+						"type": "String"
+					},
+					{
+						"name": "location_Rajaji Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Kasavanhalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Bellandur",
+						"type": "String"
+					},
+					{
+						"name": "location_Begur Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Banashankari",
+						"type": "String"
+					},
+					{
+						"name": "location_Kothanur",
+						"type": "String"
+					},
+					{
+						"name": "location_Hormavu",
+						"type": "String"
+					},
+					{
+						"name": "location_Harlur",
+						"type": "String"
+					},
+					{
+						"name": "location_Akshaya Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Jakkur",
+						"type": "String"
+					},
+					{
+						"name": "location_Electronics City Phase 1",
+						"type": "String"
+					},
+					{
+						"name": "location_Varthur",
+						"type": "String"
+					},
+					{
+						"name": "location_Chandapura",
+						"type": "String"
+					},
+					{
+						"name": "location_HSR Layout",
+						"type": "String"
+					},
+					{
+						"name": "location_Hennur",
+						"type": "String"
+					},
+					{
+						"name": "location_Ramamurthy Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Ramagondanahalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Kaggadasapura",
+						"type": "String"
+					},
+					{
+						"name": "location_Kundalahalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Koramangala",
+						"type": "String"
+					},
+					{
+						"name": "location_Hulimavu",
+						"type": "String"
+					},
+					{
+						"name": "location_Budigere",
+						"type": "String"
+					},
+					{
+						"name": "location_Hoodi",
+						"type": "String"
+					},
+					{
+						"name": "location_Malleshwaram",
+						"type": "String"
+					},
+					{
+						"name": "location_Hegde Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_8th Phase JP Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Gottigere",
+						"type": "String"
+					},
+					{
+						"name": "location_JP Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Yeshwanthpur",
+						"type": "String"
+					},
+					{
+						"name": "location_Channasandra",
+						"type": "String"
+					},
+					{
+						"name": "location_Bisuvanahalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Vittasandra",
+						"type": "String"
+					},
+					{
+						"name": "location_Indira Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Vijayanagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Kengeri",
+						"type": "String"
+					},
+					{
+						"name": "location_Brookefield",
+						"type": "String"
+					},
+					{
+						"name": "location_Sahakara Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Hosa Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Old Airport Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Bommasandra",
+						"type": "String"
+					},
+					{
+						"name": "location_Balagere",
+						"type": "String"
+					},
+					{
+						"name": "location_Green Glen Layout",
+						"type": "String"
+					},
+					{
+						"name": "location_Old Madras Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Rachenahalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Panathur",
+						"type": "String"
+					},
+					{
+						"name": "location_Kudlu Gate",
+						"type": "String"
+					},
+					{
+						"name": "location_Thigalarapalya",
+						"type": "String"
+					},
+					{
+						"name": "location_Ambedkar Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Jigani",
+						"type": "String"
+					},
+					{
+						"name": "location_Yelahanka New Town",
+						"type": "String"
+					},
+					{
+						"name": "location_Talaghattapura",
+						"type": "String"
+					},
+					{
+						"name": "location_Mysore Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Kadugodi",
+						"type": "String"
+					},
+					{
+						"name": "location_Frazer Town",
+						"type": "String"
+					},
+					{
+						"name": "location_Dodda Nekkundi",
+						"type": "String"
+					},
+					{
+						"name": "location_Devanahalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Kanakapura",
+						"type": "String"
+					},
+					{
+						"name": "location_Attibele",
+						"type": "String"
+					},
+					{
+						"name": "location_Anekal",
+						"type": "String"
+					},
+					{
+						"name": "location_Lakshminarayana Pura",
+						"type": "String"
+					},
+					{
+						"name": "location_Nagarbhavi",
+						"type": "String"
+					},
+					{
+						"name": "location_Ananth Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_5th Phase JP Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_TC Palaya",
+						"type": "String"
+					},
+					{
+						"name": "location_CV Raman Nagar",
+						"type": "String"
+					},
+					{
+						"name": "location_Kengeri Satellite Town",
+						"type": "String"
+					},
+					{
+						"name": "location_Kudlu",
+						"type": "String"
+					},
+					{
+						"name": "location_Jalahalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Subramanyapura",
+						"type": "String"
+					},
+					{
+						"name": "location_Bhoganhalli",
+						"type": "String"
+					},
+					{
+						"name": "location_Doddathoguru",
+						"type": "String"
+					},
+					{
+						"name": "location_Kalena Agrahara",
+						"type": "String"
+					},
+					{
+						"name": "location_Horamavu Agara",
+						"type": "String"
+					},
+					{
+						"name": "location_Vidyaranyapura",
+						"type": "String"
+					},
+					{
+						"name": "location_BTM 2nd Stage",
+						"type": "String"
+					},
+					{
+						"name": "location_Hebbal Kempapura",
+						"type": "String"
+					},
+					{
+						"name": "location_Hosur Road",
+						"type": "String"
+					},
+					{
+						"name": "location_Horamavu Banaswadi",
+						"type": "String"
+					},
+					{
+						"name": "location_Domlur",
+						"type": "String"
+					},
+					{
+						"name": "location_Mahadevpura",
+						"type": "String"
+					},
+					{
+						"name": "location_Tumkur Road",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SourceDataset_sd7')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage2",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "cgpa",
+						"type": "String"
+					},
+					{
+						"name": "placement_exam_marks",
+						"type": "String"
+					},
+					{
+						"name": "placed",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStorage1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AzureDataLakeStorage1_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDataLakeStorage1_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStorage2')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AzureDataLakeStorage2_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDataLakeStorage2_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureKeyVault1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabase1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('AzureSqlDatabase1_properties_typeProperties_server')]",
+					"database": "[parameters('AzureSqlDatabase1_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('AzureSqlDatabase1_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('AzureSqlDatabase1_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Tumbling Window1')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipeline": {
+					"pipelineReference": {
+						"referenceName": "CopyPipeline_1ln",
+						"type": "PipelineReference"
+					},
+					"parameters": {}
+				},
+				"type": "TumblingWindowTrigger",
+				"typeProperties": {
+					"frequency": "Minute",
+					"interval": 5,
+					"startTime": "2026-05-20T10:20:00Z",
+					"endTime": "2026-05-20T10:30:00Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 50,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": []
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/CopyPipeline_1ln')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/schedule trigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "CopyPipeline_2u7",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					},
+					{
+						"pipelineReference": {
+							"referenceName": "pipeline1",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Minute",
+						"interval": 3,
+						"startTime": "2026-05-20T09:41:00",
+						"endTime": "2026-05-20T16:00:00",
+						"timeZone": "India Standard Time"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/CopyPipeline_2u7')]",
+				"[concat(variables('factoryId'), '/pipelines/pipeline1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/schedule trigger1')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "CopyPipeline_1ln",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Minute",
+						"interval": 2,
+						"startTime": "2026-05-20T04:32:00",
+						"timeZone": "India Standard Time"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/CopyPipeline_1ln')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tumbling window')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"type": "TumblingWindowTrigger",
+				"typeProperties": {
+					"frequency": "Minute",
+					"interval": 5,
+					"startTime": "2026-05-20T09:50:00Z",
+					"endTime": "2026-05-20T15:25:00Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 50,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": []
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/window2')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipeline": {
+					"pipelineReference": {
+						"referenceName": "CopyPipeline_1ln",
+						"type": "PipelineReference"
+					},
+					"parameters": {}
+				},
+				"type": "TumblingWindowTrigger",
+				"typeProperties": {
+					"frequency": "Minute",
+					"interval": 5,
+					"startTime": "2026-05-20T05:11:00Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 50,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": []
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/CopyPipeline_1ln')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DelimitedText1",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "SourceDataset_1ln",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "filter1"
+						},
+						{
+							"name": "union1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          sepal_length as integer,",
+						"          sepal_width as integer,",
+						"          petal_length as integer,",
+						"          petal_width as integer,",
+						"          species as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 filter(sepal_width < 2) ~> filter1",
+						"filter1, source1 union(byName: true)~> union1",
+						"union1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          YearsExperience as string,",
+						"          Salary as string",
+						"     ),",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DelimitedText1')]",
+				"[concat(variables('factoryId'), '/datasets/SourceDataset_1ln')]"
+			]
+		}
+	]
+}
